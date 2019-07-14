@@ -67,7 +67,7 @@ import { AppLogger } from '../../util/app-logger';
 					const validExpression: boolean = cron.validate(cronExpression);
 					if (!validExpression) { return message.reply('an invalid cron express was given. For help on making a cron expression please visit https://www.freeformatter.com/cron-expression-generator-quartz.html.'); }
 					const expressionDescribed: string = construe.toString(cronExpression);
-					message.channel.send(`Your message will repeat **${this.uncapitalize(expressionDescribed)}**.`);
+					message.channel.send(`Your message will repeat in ${textChannel} **${this.uncapitalize(expressionDescribed)}**.`);
 	
 					// Get the payload text to send
 					const payloadMessage: string = await this.awaitPayload(message);
