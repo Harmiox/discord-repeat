@@ -32,7 +32,6 @@ import { AppLogger } from '../../util/app-logger';
 				try {
 					// Generate message to send
 					const embed: MessageEmbed = new MessageEmbed();
-					embed.setDescription('Help text here.');
 					embed.setColor('#7289DA');
 					const jobs: ICronJob[] = (await message.guild.storage.get('jobs')) || [];
 					jobs.forEach((job: ICronJob) => {
@@ -89,10 +88,10 @@ import { AppLogger } from '../../util/app-logger';
 					};
 	
 					// Create the task
-					const cronJob: cron.ScheduledTask = cron.schedule(job.expression, () => {
+					const task: cron.ScheduledTask = cron.schedule(job.expression, () => {
 						textChannel.send(job.payload).catch((err: Error) => this.logger.error('Error in cron jon: ', err));
 					});
-					this.client.tasks.set(job.identifier, cronJob);
+					this.client.tasks.set(job.identifier, task);
 
 					// Save the job
 					const jobs: ICronJob[] = (await message.guild.storage.get('jobs')) || [];
@@ -100,7 +99,7 @@ import { AppLogger } from '../../util/app-logger';
 					await message.guild.storage.set('jobs', jobs);
 	
 					// Start the task
-					cronJob.start();
+					task.start();
 	
 					return message.reply(`your message will now repeat in ${textChannel} **${this.uncapitalize(expressionDescribed)}**.`);
 				} catch (err) {

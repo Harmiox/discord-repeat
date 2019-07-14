@@ -53,13 +53,15 @@ export class EchoClient extends Client {
 				const textChannel: TextChannel = this.channels.get(job.textChannelId) as TextChannel;
 				if (!job.active) { return; }
 				if (!textChannel) { return this.logger.error('TextChannel not found: ' + job.textChannelId); }
+
 				// Setup the task
-				const cronJob: cron.ScheduledTask = cron.schedule(job.expression, () => {
+				const task: cron.ScheduledTask = cron.schedule(job.expression, () => {
 					textChannel.send(job.payload).catch((err: Error) => this.logger.error('Error in cron jon: ', err));
 				});
-				this.tasks.set(job.identifier, cronJob);
+				this.tasks.set(job.identifier, task);
+				
 				// Start the task
-				cronJob.start();
+				task.start();
 			});
 		});
 	}
