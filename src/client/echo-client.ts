@@ -1,5 +1,8 @@
-import { Client } from '@yamdbf/core';
+import { Client, Guild, GuildStorage } from '@yamdbf/core';
+import { TextChannel } from 'discord.js';
+import cron from 'node-cron';
 import { ConfigService } from '../config/config.service';
+import { ICronJob } from '../config/interfaces/cron.interface';
 import { AppLogger } from '../util/app-logger';
 
 /**
@@ -8,6 +11,7 @@ import { AppLogger } from '../util/app-logger';
 
 export class EchoClient extends Client {
 	public config: ConfigService;
+	public tasks: Map<string, cron.ScheduledTask> = new Map();
 	private logger: AppLogger = new AppLogger('EchoClient');
 	private disconnects: number = 0;
 
@@ -24,6 +28,7 @@ export class EchoClient extends Client {
 		this.config = config;
 
 		// Bind events to local client methods
+		this.on('clientReady', this.onClientReady);
 		this.on('ready', this.onReady);
 		this.on('warn', this.onWarn);
 		this.on('pause', this.onPause);
@@ -34,12 +39,33 @@ export class EchoClient extends Client {
 
 	public start() {
 		this.logger.info(`${this.logger.context} has been started.`);
-
+		
 		return super.start();
 	}
 
-	private onReady() {
-    this.logger.info(`${this.logger.context} is ready (${this.guilds.size} guilds)`);
+	private async onClientReady() {
+		// Fetch and load saved cron jobs
+		this.logger.info('Starting up echo tasks...');
+		this.storage.guilds.forEach(async (guildStorage: GuildStorage) => {
+			const jobs: ICronJob[] = (await guildStorage.get('jobs')) || [];
+			jobs.forEach((job: ICronJob) => {
+				// Validation
+				const textChannel: TextChannel = this.channels.get(job.textChannelId) as TextChannel;
+				if (!job.active) { return; }
+				if (!textChannel) { return this.logger.error('TextChannel not found: ' + job.textChannelId); }
+				// Setup the task
+				const cronJob: cron.ScheduledTask = cron.schedule(job.expression, () => {
+					textChannel.send(job.payload).catch((err: Error) => this.logger.error('Error in cron jon: ', err));
+				});
+				this.tasks.set(job.identifier, cronJob);
+				// Start the task
+				cronJob.start();
+			});
+		});
+	}
+
+	private async onReady() {
+		this.logger.info(`${this.logger.context} is ready (${this.guilds.size} guilds)`);
 	}
 
 	private onWarn(info: {}): void {
@@ -47,7 +73,10 @@ export class EchoClient extends Client {
   }
 
 	private async onPause(): Promise<void> {
-    await this.setDefaultSetting('prefix', '!');
+		// Set the prefix
+		await this.setDefaultSetting('prefix', '!');
+
+		// Continue
     this.continue();
 	}
 	
