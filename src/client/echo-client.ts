@@ -1,8 +1,9 @@
-import { Client, Guild, GuildStorage } from '@yamdbf/core';
+import { Client, GuildStorage, Message } from '@yamdbf/core';
 import { TextChannel } from 'discord.js';
 import cron from 'node-cron';
 import { ConfigService } from '../config/config.service';
 import { ICronJob } from '../config/interfaces/cron.interface';
+import { checkChannelPermissions } from '../middlewares/validate-channel';
 import { AppLogger } from '../util/app-logger';
 
 /**
@@ -26,6 +27,8 @@ export class EchoClient extends Client {
 		});
 
 		this.config = config;
+
+		this.use((message: Message, args: any[]) => checkChannelPermissions(message, args, this));
 
 		// Bind events to local client methods
 		this.on('clientReady', this.onClientReady);
@@ -59,7 +62,7 @@ export class EchoClient extends Client {
 					textChannel.send(job.payload).catch((err: Error) => this.logger.error('Error in cron jon: ', err));
 				});
 				this.tasks.set(job.identifier, task);
-				
+
 				// Start the task
 				task.start();
 			});

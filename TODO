@@ -1,34 +1,3 @@
 
 Todo:
-	✔ Repeat command @done(19-07-06 20:12)
-	✔ Vote to skip @done(19-07-07 22:07)
-	✔ Forceskip command @done(19-07-06 20:15)
-	✔ radio/live streaming @done(19-07-07 22:07)
-	✔ PlayCommand: No long duration or live videos. @done(19-07-09 13:48)
-	✔ Only allow DJ's to queue a playlist @done(19-07-07 22:07)
-	✔ Match channels bitrate @done(19-07-09 13:47)
-	☐ Allow DJ/Mod get usernames & ID's with the queue command.
-	☐ Prevent duplicates in the queue.
-	☐ Leave VoiceChannel when bot is alone.
-	☐ Lyric Support
-	☐ Kareoke
-	☐ Guild Playlists
-	☐ SoundCloud support
-	☐ Add a reaction to PlayCommand's response message to allow them to unqueue a song
-
-Commands:
-	✔ Set (set guild's music settings) @done(19-07-10 12:00)
-	✔ Replay (replay the current song, possible vote) @done(19-07-12 15:53)
-	✔ Remove (remove a song from the queue via index, playlist, or user) @done(19-07-12 15:47)
-	☐ Volume (control the volume for the dispatcher)
-	☐ Blacklist (blacklist users or songs from the bot)
-	☐ Rewind & Seek (might not add, but possibility)
-
-MusicSettings Per Guild:
-	✔ maxVolume @done(19-07-10 11:59)
-	✔ defaultVolume @done(19-07-10 11:59)
-	✔ announceSongs @done(19-07-10 11:59)
-	✔ maxDurationSeconds @done(19-07-10 11:59)
-	✔ maxSongsPerUser @done(19-07-10 11:59)
-	✔ maxQueueLength @done(19-07-10 11:59)
-	✔ voteToSkipThreshold @done(19-07-10 11:59)
+	☐ Let users exit the promt
